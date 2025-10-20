@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  PENDING
+  SUBMITTED
+  LATE
+  DONE
+}
+
+enum NotificationType {
+  TASK_CREATED
+  TASK_UPDATED
+  TASK_DELETED
+  DUE_T24H
+  DUE_T1H
+  DUE_T5M
+  DUE_NOW
+}
+
+model Task {
+  id        String   @id @default(cuid())
+  title     String
+  description String?
+  dueAt     DateTime
+  status    TaskStatus @default(PENDING)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  notificationEvents NotificationEvent[]
+  notifications      Notification[]
+}
+
+model NotificationEvent {
+  id           String           @id @default(cuid())
+  taskId       String
+  task         Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  type         NotificationType
+  scheduledFor DateTime         @map("scheduledFor_utc")
+  sentAt       DateTime?
+  canceledAt   DateTime?
+  createdAt    DateTime         @default(now())
+
+  @@unique([taskId, type, scheduledFor], map: "uniq_task_type_sched")
+  @@index([scheduledFor], map: "idx_events_scheduledFor")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  taskId    String
+  task      Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  message   String
+  createdAt DateTime         @default(now())
+  readAt    DateTime?
+}
