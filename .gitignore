@@ -1,0 +1,18 @@
+# Node / Angular
+**/node_modules/
+**/dist/
+**/.angular/cache/
+**/.parcel-cache/
+**/.next/
+**/.vite/
+**/.nuxt/
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+**/npm-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
