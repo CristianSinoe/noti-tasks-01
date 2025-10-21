@@ -1,0 +1,96 @@
+/* You can add global styles to this file, and also import other style files */
+/* === Modo oscuro global === */
+:root {
+  --bg:      #0b1020;
+  --surface: #111827;
+  --text:    #e5e7eb;
+  --muted:   #94a3b8;
+  --border:  #1f2937;
+
+  --primary:     #4f46e5;
+  --primary-700: #4338ca;
+
+  --danger:  #ef4444;
+
+  --state-pending:   #6366f1;
+  --state-submitted: #22c55e;
+  --state-late:      #ef4444;
+  --state-done:      #10b981;
+
+  --toast-bg:   #15dd0e;
+  --toast-text: #e5e7eb;
+
+  --shadow-sm:  0 1px 2px rgba(0,0,0,.25);
+  --shadow-md:  0 6px 16px rgba(0,0,0,.35);
+  --shadow-lg:  0 14px 30px rgba(0,0,0,.45);
+
+  --radius: 14px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+
+/* Tipos (opcionales) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+/* ===== Preloader ===== */
+#app-preloader {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #000000 0%, #0d3180 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;               /* por encima del toast (que usa 9999) */
+  transition: opacity .5s ease-out, visibility .5s ease-out;
+}
+
+#app-preloader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#app-preloader .app-name {
+  font-family: 'Montserrat', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 18px;
+  letter-spacing: .5px;
+}
+
+#app-preloader .spinner {
+  width: 220px;
+  height: 10px;
+  background-color: rgba(255,255,255,.2);
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25) inset;
+}
+
+#app-preloader .spinner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -40%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(99,102,241,.0), rgba(99,102,241,.9), rgba(99,102,241,.0));
+  animation: progress-bar 1.1s cubic-bezier(0.65, 0.05, 0.36, 1) infinite;
+  border-radius: inherit;
+}
+
+#app-preloader {
+  transition: opacity 10.5s ease-in-out, visibility 1.5s ease-in-out;
+}
+
+
+@keyframes progress-bar {
+  0%   { left: -40%; }
+  100% { left: 100%; }
+}

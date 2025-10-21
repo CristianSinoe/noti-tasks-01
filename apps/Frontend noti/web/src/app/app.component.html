@@ -1,0 +1,119 @@
+<div class="app-shell">
+
+  <!-- Panel diario estilo mock -->
+  <article class="panel panel--day">
+
+    <!-- Encabezado con fecha grande -->
+    <header class="day-header">
+      <div class="day-left">
+        <div class="day-num">{{ now | date:'dd' }}</div>
+        <div class="day-monthyear">
+          <div class="month">{{ now | date:'MMM' }}</div>
+          <div class="year">{{ now | date:'yyyy' }}</div>
+        </div>
+      </div>
+      <div class="day-right">
+        <div class="weekday">{{ now | date:'EEEE' | uppercase }}</div>
+      </div>
+    </header>
+
+    <!-- Input + acciones (misma fila: [input | botón]) -->
+    <section class="day-actions day-actions--inline">
+      <input class="input input--ghost" [(ngModel)]="title" placeholder="Nueva tarea" />
+      <button class="btn btn--add" (click)="create()">
+        <span class="plus">+</span>
+        Agregar
+      </button>
+    </section>
+
+    <!-- Campo descripción y fecha/hora -->
+    <section class="day-form">
+      <textarea class="textarea textarea--ghost" [(ngModel)]="description" placeholder="Descripción"></textarea>
+
+      <div class="field date-field">
+        <label>Fecha/hora (local) → el backend guarda en UTC</label>
+        <input class="input input--date" [(ngModel)]="dueAt" type="datetime-local" />
+      </div>
+
+      <small class="card__meta">Recordatorios: T-24h, T-1h, T-5m y T (DUE_NOW).</small>
+    </section>
+
+    <!-- Pila de tareas -->
+    <section class="tasks-stack">
+      <div
+        class="task-item"
+        *ngFor="let t of tasks"
+        [ngClass]="{
+          'task-item--ok': t.status === 'PENDING' && !isLate(t),
+          'task-item--expired': isLate(t) && !isDelivered(t),
+          'task-item--done': isDelivered(t)
+        }"
+      >
+        <div class="task-main">
+          <div class="task-title">{{ t.title }}</div>
+          <div class="task-desc" *ngIf="t.description as d">{{ d }}</div>
+          <div class="task-meta">Vence: {{ t.dueAt | date:'medium' }}</div>
+        </div>
+
+        <div class="task-actions">
+          <!-- Badge de estado (muestra 'Vencida' si aplica) -->
+          <span
+            class="badge"
+            [ngClass]="{
+              'badge--pending':  t.status === 'PENDING' && !isLate(t),
+              'badge--expired':  isLate(t) && !isDelivered(t),
+              'badge--submitted': t.status === 'SUBMITTED',
+              'badge--done':      t.status === 'DONE'
+            }"
+          >
+            {{ isLate(t) && !isDelivered(t) ? 'Vencida' : statusEs(t.status) }}
+          </span>
+
+          <div class="task-buttons">
+            <button class="btn btn--edit" *ngIf="editId !== t.id" (click)="startEdit(t)">Editar</button>
+
+            <button
+              class="btn btn--deliver"
+              (click)="submit(t)"
+              [disabled]="isDelivered(t) || isLate(t)"
+              [ngClass]="{ 'btn--disabled': isDelivered(t) || isLate(t) }"
+            >
+              {{
+                isDelivered(t)
+                  ? 'Entregada'
+                  : (isLate(t) ? 'Vencida' : 'Entregar')
+              }}
+            </button>
+
+            <button class="btn btn--danger" (click)="remove(t)">Eliminar</button>
+          </div>
+        </div>
+
+        <!-- Editor inline -->
+        <div *ngIf="editId === t.id" class="task-edit">
+          <div class="field">
+            <label>Título *</label>
+            <input class="input" [(ngModel)]="editTitle" placeholder="Título *" />
+          </div>
+          <div class="field">
+            <label>Descripción</label>
+            <textarea class="textarea" [(ngModel)]="editDescription" placeholder="Descripción"></textarea>
+          </div>
+          <div class="field">
+            <label>Nueva fecha/hora (local)</label>
+            <input class="input" [(ngModel)]="editDueAt" type="datetime-local" />
+          </div>
+          <div class="task-edit-actions">
+            <button class="btn btn--primary" (click)="saveEdit()">Guardar</button>
+            <button class="btn" (click)="cancelEdit()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <!-- Toast arriba y centrado -->
+  <div class="toast-stack" *ngIf="toast">
+    <div class="toast">{{ toast }}</div>
+  </div>
+</div>
